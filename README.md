@@ -89,7 +89,7 @@ Additional to `cluster_learning_sampling.py`, output files contain 6 additional 
 ## GB1 dataset
 GB1 dataset (`GB1.xlsx`) can be downloaded from: [Wu, Nicholas C., et al. "Adaptation in protein fitness landscapes is facilitated by indirect paths." Elife 5 (2016): e16965.](https://elifesciences.org/articles/16965)
 ## PhoQ dataset
-PhoQ dataset (`PhoQ.xlsx`) is obtained from [Podgornaia, Anna I., and Michael T. Laub. "Pervasive degeneracy and epistasis in a protein-protein interface." Science 347.6222 (2015): 673-677.](https://science.sciencemag.org/content/347/6222/673.abstract)
+PhoQ dataset (`PhoQ.xlsx`) is owned by Michael T. Laub's lab. Refer to [Podgornaia, Anna I., and Michael T. Laub. "Pervasive degeneracy and epistasis in a protein-protein interface." Science 347.6222 (2015): 673-677.](https://science.sciencemag.org/content/347/6222/673.abstract)
 ## MLDE 
 The supervised learning package MLDE: [Wittmann, Bruce J., Yisong Yue, and Frances H. Arnold. "Machine Learning-Assisted Directed Evolution Navigates a Combinatorial Epistatic Fitness Landscape with Minimal Screening Burden." (2020).](https://www.biorxiv.org/content/10.1101/2020.12.04.408955v1)
 # Reference
