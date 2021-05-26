@@ -21,7 +21,7 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 6. [MLDE](https://github.com/fhalab/MLDE) (all required packages for supervised learning are given in MLDE)
 
 # Input Files:
-`$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.
+`$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
 `$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library without fitness value. Only one Column (Variants). This column lists variants with the same order in `COMB_LIB.xlsx`, and the rest of variants in the combinatorial library without labels are then listed below. 
 
 # Usage
