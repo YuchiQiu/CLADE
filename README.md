@@ -18,7 +18,8 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 3. numpy
 4. pandas
 5. pickle
-6. [MLDE](https://github.com/fhalab/MLDE) (all required packages for supervised learning are given in MLDE)
+6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model)
+Please put MLDE package inside the directory of CLADE: `CLADE/MLDE/`.
 
 # Input Files:
 `$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
