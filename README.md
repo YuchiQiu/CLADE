@@ -21,7 +21,7 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model), and all packages required by MLDE.
 7. Download datasets `GB1.xlsx` and `PhoQ.xlsx`. Put them inside directory `Input/`. 
 
-Please put MLDE package inside the directory of CLADE with path: `CLADE/MLDE/*`.
+Notes: Please put MLDE package inside the directory of CLADE with path: `CLADE/MLDE/*`.
 
 # Input Files:
 `$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
