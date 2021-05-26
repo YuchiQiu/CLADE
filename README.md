@@ -8,6 +8,7 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
   * [Encoding](#encoding)
   * [Cluster-learning Sampling](#cluster-learning-sampling)
   * [CLADE](#CLADE)
+  * [DEMO](#DEMO)
 - [Sources](#sources) 
 - [Reference](#reference) 
 
@@ -90,7 +91,7 @@ $ python3 CLADE.py --help
 In additional to three output files from `cluster_learning_sampling.py`, there are 6 files output from MLDE package. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
 ### Examples:
 `python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4`
-## Demo:
+## DEMO:
 Functions `Encoding.py` and `cluster_learning_sampling.py` can be run within a few minutes on a desktop. Demo can be run via the examples given above. 
 
 `CLADE.py` includes the ensembled supervised learning models with hyperparameter optimization, which takes a few hours to run on a desktop. A simple demo can be run with a minimized supervised model with only one model without any hyperparameter optimization by using `Demo_MldeParameters.csv`:
