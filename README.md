@@ -26,7 +26,7 @@ Note: Please put MLDE package inside the directory of CLADE with path: `CLADE/ML
 
 # Input Files:
 `$COMB_LIB.xlsx`: Variants and their fitness in the combinatory library. Only variants with available experimentally determined fitness are listed. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
-`$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library. Only one Column (Variants). The order of the variants needs to be identitcal to `COMB_LIB.xlsx`. The rest of variants in the combinatorial library not listed in `COMB_LIB.xlsx` are listed below. This file contain $20^n$ variants, where n is the number of mutation sites.
+`$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library. Only one Column (Variants). The order of the variants needs to be identitcal to `COMB_LIB.xlsx`. The rest of variants in the combinatorial library not listed in `COMB_LIB.xlsx` are listed below. This file contain 20<sup>n</sup> variants, where n is the number of mutation sites.
 
 # Usage
 ## Encoding
