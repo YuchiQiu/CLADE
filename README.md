@@ -82,11 +82,15 @@ $ python3 CLADE.py --help
 `--num_batch NUM_BATCH` number of batches; Default: 4  \
 `--input_path INPUT_PATH`  Input Files Directory. Default 'Input/'  \
 `--save_dir SAVE_DIR`   Output Files Directory; Default: current time  \
-`--mldepara MLDEPARA`   List of MLDE parameters \
+`--mldepara MLDEPARA`   List of MLDE parameters. Default: MldeParameters.csv \
 ### Outputs:
 Additional to `cluster_learning_sampling.py`, output files contain 6 additional files from MLDE outputs. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
 ### Examples:
-`python3 cluster_learning_sampling.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4`
+`python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4`
+The supervised learning model with 16 models and hyperparameter optimization may take hours to run for a desktop. It is easy to test on a demo with only 1 model without hyperparameter optimization:
+#### Demo:
+`python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4 --mldepara Demo_MldeParameters.csv`
+
 # Sources
 ## GB1 dataset
 GB1 dataset (`GB1.xlsx`) can be obtained from: [Wu, Nicholas C., et al. "Adaptation in protein fitness landscapes is facilitated by indirect paths." Elife 5 (2016): e16965.](https://elifesciences.org/articles/16965)
