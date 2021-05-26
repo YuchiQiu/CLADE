@@ -18,7 +18,8 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 3. numpy
 4. pandas
 5. pickle
-6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model)
+6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model), and all packages required by MLDE.
+
 Please put MLDE package inside the directory of CLADE: `CLADE/MLDE/`.
 
 # Input Files:
