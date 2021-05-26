@@ -20,13 +20,13 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 4. pandas
 5. pickle
 6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model), and all packages required by MLDE.
-7. Download datasets `GB1.xlsx` and `PhoQ.xlsx`. Put them inside directory `Input/`. 
+7. Download datasets `GB1.xlsx`. Put it in the directory `Input/`. 
 
-Notes: Please put MLDE package inside the directory of CLADE with path: `CLADE/MLDE/*`.
+Note: Please put MLDE package inside the directory of CLADE with path: `CLADE/MLDE/*`.
 
 # Input Files:
-`$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
-`$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library without fitness value. Only one Column (Variants). This column lists variants with the same order in `COMB_LIB.xlsx`, and the rest of variants in the combinatorial library without labels are then listed below. 
+`$COMB_LIB.xlsx`: Variants and their fitness in the combinatory library. Only variants with available experimentally determined fitness are listed. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
+`$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library. Only one Column (Variants). The order of the variants needs to be identitcal to `COMB_LIB.xlsx`. The rest of variants in the combinatorial library not listed in `COMB_LIB.xlsx` are listed below. This file contain $20^n$ variants, where n is the number of mutation sites.
 
 # Usage
 ## Encoding
