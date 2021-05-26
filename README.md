@@ -20,7 +20,7 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 5. pickle
 6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model), and all packages required by MLDE.
 
-Please put MLDE package inside the directory of CLADE: `CLADE/MLDE/`.
+Please put MLDE package inside the directory of CLADE with path: `CLADE/MLDE/*`.
 
 # Input Files:
 `$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
@@ -86,11 +86,14 @@ $ python3 CLADE.py --help
 `--save_dir SAVE_DIR`   Output Files Directory; Default: current time  \
 `--mldepara MLDEPARA`   List of MLDE parameters. Default: MldeParameters.csv \
 ### Outputs:
-Additional to `cluster_learning_sampling.py`, output files contain 6 additional files from MLDE outputs. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
+In additional to three output files from `cluster_learning_sampling.py`, there are 6 files output from MLDE package. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
 ### Examples:
 `python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4`
-The supervised learning model with 16 models and hyperparameter optimization may take hours to run for a desktop. It is easy to test on a demo with only 1 model without hyperparameter optimization:
-#### Demo:
+## Demo:
+Functions `Encoding.py` and `cluster_learning_sampling.py` can be run within a few minutes on a desktop. Demo can be run via the examples given above. 
+
+`CLADE.py` includes the ensembled supervised learning models with hyperparameter optimization, which takes a few hours to run on a desktop. A simple demo can be run with a minimized supervised model with only one model without any hyperparameter optimization by using `Demo_MldeParameters.csv`:
+
 `python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4 --mldepara Demo_MldeParameters.csv`
 
 # Sources
