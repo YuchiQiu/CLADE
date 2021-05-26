@@ -20,6 +20,9 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 5. pickle
 6. [MLDE](https://github.com/fhalab/MLDE) (all required packages for supervised learning are given in MLDE)
 
+# Input Files:
+`$COMB_LIB.xlsx`: All variants with their fitness values. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.
+`$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library without fitness value. Only one Column (Variants). This column lists variants with the same order in `COMB_LIB.xlsx`, and the rest of variants in the combinatorial library without labels are then listed below. 
 
 # Usage
 ## Encoding
@@ -29,15 +32,14 @@ $ python3 Encoding.py --help
 ```
 ### Inputs:
 `--save_dir SAVE_DIR`   Directory for Output Encoding Files. Default value is 'Input/' which store all input files for CLADE  \
-`--comb_lib COMB_LIB`   xlsx file for unlabeled combinatorial library. \
 `--dataset DATASET`     Name of the data set. Options: 1. GB1; 2. PhoQ. It will load file COMB_LIB_all.xlsx \
 `--encoding ENCODING`  Name of the encoding method; Options: 1. AA; 2.Georgiev. Default: AA \
-`--input_dir INPUT_DIR` Directory for Input Files (directory for xlsx files for combinatorial library). \
+`--input_dir INPUT_DIR` Directory for Input Files (directory for xlsx files for combinatorial library). Default: Input/\
 ### Outputs:
 `$encoding$.npy` and `$encoding$_normalized.npy` are 3D encoding tensor for combinatorial library. The later one is standardized with zero mean and unit variance. 
 `ComboToIndex_$dataset$_$encoding$.pkl`: a dictionary link variant and its index in the xlsx file (`comb_lib`).   
 ### Examples:
-`python3 AAencoding.py --encoding AA`
+`python3 Encoding.py --encoding AA`
 
 ## Cluster-learning Sampling
 `cluster_learning_sampling.py` Use hierarchical clustering to generate training data. 
