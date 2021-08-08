@@ -6,7 +6,7 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 - [Installment](#installment)
 - [Usage](#usage)
   * [Encoding](#encoding)
-  * [Cluster-learning Sampling](#cluster-learning-sampling)
+  * [Clustering Sampling](#cluster-learning-sampling)
   * [CLADE](#CLADE)
   * [DEMO](#DEMO)
 - [Sources](#sources) 
