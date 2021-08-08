@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_dir', help="Directory for Output Encoding Files. Default value is 'Input/' which store all input files for CLADE", default='Input/')
-    parser.add_argument("--dataset", help = "Name of the data set. Options: 1. GB1; 2. PhoQ. It will load file COMB_LIB_all.xlsx", default = 'GB1')
+    parser.add_argument("--dataset", help = "Name of the data set. Options: 1. GB1; 2. PhoQ. It will load file DATASET.xlsx", default = 'GB1')
     parser.add_argument("--encoding", help = "Name of the encoding method; Options: 1. AA; 2. Georgiev. Default: AA",default='AA')
     parser.add_argument('--input_dir',help="Directory for Input Files (directory for xlsx files for combinatorial library). Default: Input",default='Input/')
 

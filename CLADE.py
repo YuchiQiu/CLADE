@@ -1,4 +1,4 @@
-from cluster_learning_sampling import main_sampling
+from cluster_sampling import main_sampling
 import os
 import pandas as pd
 def mlde(args,save_dir,trainingdata):
@@ -28,8 +28,8 @@ if __name__ == "__main__":
     parser.add_argument('--input_path',help="Input Files Directory. Default 'Input/'",default='Input/')
     parser.add_argument('--save_dir', help="Output Files Directory; Default: current time", default= time + '/')
     parser.add_argument('--seed', help="random seed",type=int, default= 100)
-    parser.add_argument('--acquisition',help="Acquisition function; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. ",default='random')
-    parser.add_argument('--sampling_para', help="Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3. redundancy for random sampling",type=float, default= 4.0)
+    parser.add_argument('--acquisition',help="Acquisition function used for in-cluster sampling; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. ",default='random')
+    parser.add_argument('--sampling_para', help="Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3&4. redundant for Thompson and random sampling",type=float, default= 4.0)
 
 
     ## parameters for MLDE
