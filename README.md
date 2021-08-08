@@ -3,7 +3,7 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 
 # Table of Contents  
 
-- [Requirements](#requirements)
+- [Installment](#installment)
 - [Usage](#usage)
   * [Encoding](#encoding)
   * [Cluster-learning Sampling](#cluster-learning-sampling)
@@ -12,21 +12,27 @@ CLADE guides experiments in directed evolution to optimize fitness of variants i
 - [Sources](#sources) 
 - [Reference](#reference) 
 
+# Installment
+`git clone --recurse-submodules https://github.com/YuchiQiu/CLADE.git`
 
-# Requirements
+Then install [MLDE](https://github.com/fhalab/MLDE) for supervised learning model:
+```
+cd CLADE/ 
+git clone --recurse-submodules https://github.com/fhalab/MLDE.git`
+```
+Other packages required:
 1. Python3.6 or later.
 2. [scikit-learn](https://scikit-learn.org/stable/)
 3. numpy
 4. pandas
 5. pickle
-6. [MLDE](https://github.com/fhalab/MLDE) (Supervised learning model), and all packages required by MLDE.
-7. Download datasets `GB1.xlsx`. Put it in the directory `Input/`. 
 
-Note: Please put MLDE package inside the directory of CLADE with path: `CLADE/MLDE/*`.
+The GB1 dataset needs to be downloaded from: [GB1](https://elifesciences.org/articles/16965)
+
+Put `GB1.xlsx` in the directory `Input/`. 
 
 # Input Files:
 `$COMB_LIB.xlsx`: Variants and their fitness in the combinatory library. Only variants with available experimentally determined fitness are listed. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
-`$COMB_LIB_all.xlsx`: The list of all variants in the combinatorial library. Only one Column (Variants). The order of the variants needs to be identitcal to `COMB_LIB.xlsx`. The rest of variants in the combinatorial library not listed in `COMB_LIB.xlsx` are listed below. This file contain 20<sup>n</sup> variants, where n is the number of mutation sites.
 
 # Usage
 ## Encoding
@@ -36,7 +42,7 @@ $ python3 Encoding.py --help
 ```
 ### Inputs:
 `--save_dir SAVE_DIR`   Directory for Output Encoding Files. Default value is 'Input/' which store all input files for CLADE  \
-`--dataset DATASET`     Name of the data set. Options: 1. GB1; 2. PhoQ. It will load file COMB_LIB_all.xlsx \
+`--dataset DATASET`     Name of the data set. Options: 1. GB1; 2. PhoQ. It will load file COMB_LIB.xlsx \
 `--encoding ENCODING`  Name of the encoding method; Options: 1. AA; 2.Georgiev. Default: AA \
 `--input_dir INPUT_DIR` Directory for Input Files (directory for xlsx files for combinatorial library). Default: Input/\
 ### Outputs:
@@ -45,10 +51,10 @@ $ python3 Encoding.py --help
 ### Examples:
 `python3 Encoding.py --encoding AA`
 
-## Cluster-learning Sampling
-`cluster_learning_sampling.py` Use hierarchical clustering to generate training data. 
+## Clustering Sampling
+`clustering_sampling.py` Use hierarchical clustering to generate training data. 
 ```python
-$ python3 cluster_learning_sampling.py --help
+$ python3 cluster_sampling.py --help
 ```
 ### Inputs
 #### positional arguments:  
@@ -62,37 +68,29 @@ $ python3 cluster_learning_sampling.py --help
 `--num_batch NUM_BATCH` number of batches; Default: 4  \
 `--input_path INPUT_PATH`  Input Files Directory. Default 'Input/'  \
 `--save_dir SAVE_DIR`   Output Files Directory; Default: current time  \
-
+`--acquisition ACQUISITION` Acquisition function used for in-cluster sampling; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. Default: random \
+`--sampling_para SAMPLING_PARA` Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3&4. redundant for Thompson and random sampling. Default: 4.0.\
 ### Outputs:
-`parameters.csv`: Hyperparameters used in the cluster-learning sampling.
+`parameters.csv`: Hyperparameters used in the clustering sampling.
 `InputValidationData.csv`: Selected labeled variants. Training data for downstream supervised learning. Default will generate 384 labeled variants with batch size 96.
 `clustering.npz`: Indecis of variants in each cluster.
 ### Examples:
-`python3 cluster_learning_sampling.py 30 40 40`
+`python3 cluster_sampling.py 30 40 40`
 ## CLADE
-`CLADE.py` CLADE framework. Run `cluster_learning_sampling.py` and downstream supervised learning (MLDE).
-```python
-$ python3 CLADE.py --help
-```
+`CLADE.py` Run full process of CLADE. Run `cluster_sampling.py` and downstream supervised learning (MLDE).
+
 ### Inputs
-#### positional arguments:  
-`K_increments` Increments of clusters at each hierarchy; Input a list; For example: --K_increments 30 30 30. \
-#### optional arguments: 
-`--dataset DATASET`     Name of the data set. Options: 1. GB1; 2. PhoQ. \
-`--encoding ENCODING`  Name of the encoding method; Options: 1. AA; 2.Georgiev. Default: AA \
-`--num_first_round NUM_FIRST_ROUND` number of variants in the first round sampling; Default: 96  \
-`--batch_size BATCH_SIZE` Batch size. Number of variants can be screened in parallel. Default: 96  \
-`--hierarchy_batch HIERARCHY_BATCH` Excluding the first-round sampling, new hierarchy is generated after every hierarchy_batch variants are collected until max hierarchy. Default:96  \
-`--num_batch NUM_BATCH` number of batches; Default: 4  \
-`--input_path INPUT_PATH`  Input Files Directory. Default 'Input/'  \
-`--save_dir SAVE_DIR`   Output Files Directory; Default: current time  \
-`--mldepara MLDEPARA`   List of MLDE parameters. Default: MldeParameters.csv \
+It requires the same positional and optional arguments with `cluster_sampling.py`. 
+
+It has an additional optional argument:
+
+`--mldepara MLDEPARA`   List of MLDE parameters. Default: MldeParameters.csv 
 ### Outputs:
-In additional to three output files from `cluster_learning_sampling.py`, there are 6 files output from MLDE package. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
+In additional to three output files from `cluster_sampling.py`, there are 6 files output from MLDE package. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
 ### Examples:
 `python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4`
 ## DEMO:
-Functions `Encoding.py` and `cluster_learning_sampling.py` can be run within a few minutes on a desktop. Demo can be run via the examples given above. 
+Functions `Encoding.py` and `cluster_sampling.py` can be run within a few minutes on a desktop. Demo can be run via the examples given above. 
 
 `CLADE.py` includes the ensembled supervised learning models with hyperparameter optimization, which takes a few hours to run on a desktop. A simple demo can be run with a minimized supervised model with only one model without any hyperparameter optimization by using `Demo_MldeParameters.csv`:
 
