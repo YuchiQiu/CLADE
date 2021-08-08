@@ -56,7 +56,7 @@ def feature_single(variant,encoding):
     return Feature
 
 def RunEncoding(input_dir,save_dir,dataset,encoding):
-    data=pd.read_excel(os.path.join(input_dir,dataset+'_all.xlsx'))
+    data=pd.read_excel(os.path.join(input_dir,dataset+'.xlsx'))
     Variants = data['Variants'].values
     Feature=[]
 

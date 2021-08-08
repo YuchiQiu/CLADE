@@ -6,9 +6,48 @@ from sklearn.cluster import KMeans
 import warnings
 import pickle
 import copy
+from sklearn.gaussian_process import GaussianProcessRegressor
 
-
-
+def sampling_subcluster_priority(seed,acquisition,sampling_para,features,Fitness,SEQ_index,Index):
+    if acquisition in ['UCB', 'epsilon','Thompson']:
+        X_GP=[]
+        Y_GP=[]
+        for cluster_id in range(len(Index)):
+            X_GP.extend(features[SEQ_index[cluster_id]])
+            Y_GP.extend(Fitness[SEQ_index[cluster_id]])
+        X_GP=np.asarray(X_GP)
+        Y_GP=np.asarray(Y_GP)
+        # print(X_GP.shape)
+        # print(Y_GP.shape)
+        regr = GaussianProcessRegressor(random_state=seed)
+        regr.fit(X_GP, Y_GP)
+    for cluster_id in range(len(Index)):
+        if len(SEQ_index[cluster_id])>0 and len(Index[cluster_id]):
+            if acquisition in ['UCB', 'epsilon','Thompson']:
+                # X_GP = features[SEQ_index[cluster_id]]
+                # Y_GP = Fitness[SEQ_index[cluster_id]]
+                # regr = GaussianProcessRegressor(random_state=seed)
+                # regr.fit(X_GP, Y_GP)
+                pred_mean, pred_std = regr.predict(features[Index[cluster_id]], return_std=True)
+                if acquisition == 'UCB':
+                    # beta = 4 followed by Romero, Philip et al., PNAS 2013
+                    index_GP = np.argsort(pred_mean + pred_std * np.sqrt(sampling_para))[::-1]
+                elif acquisition == 'epsilon':
+                    p_GP = np.random.rand()
+                    if p_GP < sampling_para:
+                        # exploration
+                        index_GP = np.argsort(pred_std)[::-1]
+                    else:
+                        # exploitation
+                        index_GP = np.argsort(pred_mean)[::-1]
+                elif acquisition =='Thompson':
+                    samples_TS = np.random.normal(0,1,pred_mean.shape)
+                    samples_TS = pred_mean + pred_std * samples_TS
+                    index_GP = np.argsort(samples_TS)[::-1]
+                Index[cluster_id]=Index[cluster_id][index_GP]
+            elif acquisition == 'random':
+                np.random.shuffle(Index[cluster_id])
+    return Index
 def shuffle_index(Index):
     for i in range(len(Index)):
         np.random.shuffle(Index[i])
@@ -90,7 +129,7 @@ def length_index(SEQ_index):
     for i in range(len(SEQ_index)):
         k+=len(SEQ_index[i])
     return k
-def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, AACombo, Fitness, num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy,K_increments):
+def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisition,sampling_para,AACombo, Fitness, num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy,K_increments):
     np.random.seed(seed)
 
     # new hierarchy needs to be generated when number of samples is included in the array
@@ -104,11 +143,11 @@ def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, AACombo
 
 
     Index = shuffle_index(Index)
-    # store sampling results
+    # store selected samples with sequential order
     Fit_list = []
     SEQ_list = []
     Cluster_list=[]
-    #  store ground truth information in each cluster
+    #  store selected samples according to the cluster they belong to
     Fit = [[] for _ in range(len(Index))]
     SEQ = [[] for _ in range(len(Index))]
     SEQ_index = [[] for _ in range(len(Index))]
@@ -141,13 +180,20 @@ def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, AACombo
                          'num_samples': copy.deepcopy(np.asarray(sample_length)), 'Index': copy.deepcopy(Index),
                          'SEQ_index': copy.deepcopy(SEQ_index)}
 
+    # use GP-UCB or GP-epsilon greedy search or random sampling
+    # to get sampling priority for sequences in each non-empty cluster
+    Index = sampling_subcluster_priority(seed, acquisition, sampling_para, features, Fitness, SEQ_index, Index)
+
+
     while num < num_training_data:
         cluster_id = np.random.choice(np.arange(0, total_clusters), p=Prob)
-        # if all samples in one cluster have been selected, we need to update the sampling probablity.
+        # if all sequences in a cluster have been selected,
+        # we need to update the sampling probablity by setting the Prob in this cluster to be zero.
         while len(Index[cluster_id]) == 0:
             Prob[cluster_id] = 0
             Prob = Prob / np.sum(Prob)
             cluster_id = np.random.choice(np.arange(0, total_clusters), p=Prob)
+
         Fit[cluster_id].append(Fitness[Index[cluster_id][0]])
         SEQ[cluster_id].append(AACombo[Index[cluster_id][0]])
         Fit_list.append(Fitness[Index[cluster_id][0]])
@@ -159,13 +205,18 @@ def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, AACombo
 
         num += 1
 
-        # update sampling probabilities
+        # update sampling probabilities and update sampling priority
         if np.mod(num, batch_size) == 0:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=RuntimeWarning)
                 Mean_Fit = np.asarray([np.asarray(Fit[i]).mean() for i in range(total_clusters)])
             Mean_Fit[np.where(np.isnan(Mean_Fit))[0]] = 0
             Prob = Mean_Fit / np.sum(Mean_Fit)
+
+            # use GP-UCB or GP-epsilon greedy search or random sampling
+            # to get sampling priority for sequences in each non-empty cluster
+            Index = sampling_subcluster_priority(seed, acquisition, sampling_para, features, Fitness, SEQ_index, Index)
+
             tree[hierarchy]['num_samples'] = copy.deepcopy(np.asarray(sample_length))
             tree[hierarchy]['mean'] = copy.deepcopy(np.asarray(Mean_Fit))
             tree[hierarchy]['Index'] = copy.deepcopy(Index)
@@ -250,6 +301,10 @@ def main_sampling(seed,args):
     num_training_data = batch_size*num_batch
     input_path=args.input_path
     save_dir=args.save_dir
+
+    acquisition=args.acquisition
+    sampling_para=args.sampling_para
+
     groundtruth_file=os.path.join(input_path, dataset+  '.xlsx')
     groundtruth = pd.read_excel(groundtruth_file)
     Fitness = groundtruth['Fitness'].values
@@ -258,16 +313,17 @@ def main_sampling(seed,args):
 
 
     if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
+        # os.mkdir(save_dir)
+        os.system('mkdir -p '+save_dir)
 
-    para=['# training data','# first round','batch size','hierarchy batch','max hierarchy']
-    value=[num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy]
-    for i in range(len(K_increments)):
-        para.append('K'+str(i+1))
-        value.append(K_increments[i])
-    para_csv = pd.DataFrame({'Parameters': para, 'Value':value })
-
-    para_csv.to_csv(save_dir + 'parameters.csv', index=False)
+    # para=['# training data','# first round','batch size','hierarchy batch','max hierarchy']
+    # value=[num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy]
+    # for i in range(len(K_increments)):
+    #     para.append('K'+str(i+1))
+    #     value.append(K_increments[i])
+    # para_csv = pd.DataFrame({'Parameters': para, 'Value':value })
+    #
+    # para_csv.to_csv(save_dir + 'parameters.csv', index=False)
 
     # get feature matrix
     encoding_lib = os.path.join(input_path, dataset+'_'+encoding + '_normalized.npy')
@@ -277,7 +333,7 @@ def main_sampling(seed,args):
     features = features[0:len(Fitness)]
 
 
-    trainingdata=cluster_sample(seed, input_path,save_dir, dataset,encoding,features, AACombo, Fitness, num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy,K_increments)
+    trainingdata=cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisition,sampling_para,AACombo, Fitness, num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy,K_increments)
     return trainingdata,save_dir
 if __name__ == "__main__":
 
@@ -297,11 +353,15 @@ if __name__ == "__main__":
     parser.add_argument("--num_batch", help="number of batches; Default: 4",type=int,default=4)
     parser.add_argument('--input_path',help="Input Files Directory. Default 'Input/'",default='Input/')
     parser.add_argument('--save_dir', help="Output Files Directory; Default: current time", default= time + '/')
+    parser.add_argument('--seed', help="random seed",type=int, default= 100)
+    parser.add_argument('--acquisition',help="Acquisition function; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. ",default='random')
+    parser.add_argument('--sampling_para', help="Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3. redundancy for random sampling",type=float, default= 4.0)
+
 
     args = parser.parse_args()
 
 
     # random seed for reproduction
-    seed=100
+    seed=args.seed
     main_sampling(seed,args)
 
