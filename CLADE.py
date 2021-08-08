@@ -1,4 +1,4 @@
-from cluster_sampling import main_sampling
+from clustering_sampling import main_sampling
 import os
 import pandas as pd
 def mlde(args,save_dir,trainingdata):
