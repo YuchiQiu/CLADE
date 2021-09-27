@@ -108,7 +108,7 @@ Functions `Encoding.py` and `cluster_sampling.py` can be run within a few minute
 GB1 dataset (`GB1.xlsx`) can be obtained from: [Wu, Nicholas C., et al. "Adaptation in protein fitness landscapes is facilitated by indirect paths." Elife 5 (2016): e16965.](https://elifesciences.org/articles/16965)
 ## PhoQ dataset
 PhoQ dataset (`PhoQ.xlsx`) is owned by Michael T. Laub's lab. Please cite: [Podgornaia, Anna I., and Michael T. Laub. "Pervasive degeneracy and epistasis in a protein-protein interface." Science 347.6222 (2015): 673-677.](https://science.sciencemag.org/content/347/6222/673.abstract)
-## MLDE 
-The supervised learning package MLDE can be obtained from: [Wittmann, Bruce J., Yisong Yue, and Frances H. Arnold. "Informed training set design enables efficient machine learning-assisted directed protein evolution." Cell Systems (2021).](https://www.cell.com/cell-systems/fulltext/S2405-4712(21)00286-6?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2405471221002866%3Fshowall%3Dtrue)
+## MLDE packages and zero-shot predictions
+The supervised learning package MLDE and zero-shot predictions can be found in: [Wittmann, Bruce J., Yisong Yue, and Frances H. Arnold. "Informed training set design enables efficient machine learning-assisted directed protein evolution." Cell Systems (2021).](https://www.cell.com/cell-systems/fulltext/S2405-4712(21)00286-6?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2405471221002866%3Fshowall%3Dtrue)
 # Reference
 This work is under peer review.
