@@ -53,11 +53,16 @@ def feature_single(variant,encoding):
         Feature=[[georgiev_param[character] for georgiev_param
           in georgiev_parameters] for character in variant]
         Feature=np.asarray(Feature)
+    elif encoding == 'onehot':
+        aalist=list(gg_1.keys())
+        for AA in variant:
+            Feature.append([AA==aa for aa in aalist])
+        Feature=np.asarray(Feature).astype(float)
+
     return Feature
 
-def RunEncoding(input_dir,save_dir,dataset,encoding):
-    data=pd.read_excel(os.path.join(input_dir,dataset+'.xlsx'))
-    Variants = data['Variants'].values
+def RunEncoding(input_dir,Variants,encoding):
+
     Feature=[]
 
     for i in range(len(Variants)):
@@ -67,21 +72,31 @@ def RunEncoding(input_dir,save_dir,dataset,encoding):
 
     Feature=np.asarray(Feature)
 
-    np.save(os.path.join(save_dir, dataset+'_'+encoding+ '.npy'), Feature)
     # normalize data
-    data=np.zeros(Feature.shape)
-    for i in range(Feature.shape[1]):
-        for j in range(Feature.shape[2]):
-            scalers= StandardScaler()
-            tmp=Feature[:, i, j].reshape(-1,1)
-            if tmp.max()==1.0 and tmp.min()==0.0:
-                data[:,i,j] = tmp.reshape(len(tmp))
-            else:
-                tmp2=scalers.fit_transform(tmp)
-                data[:, i, j] = tmp2.reshape(len(tmp2))
-    np.save(os.path.join(save_dir, dataset+'_'+encoding + '_normalized.npy'), data)
+    if encoding =='onehot':
+        Feature_normalized=Feature
+    else:
+        Feature_normalized =np.zeros(Feature.shape)
+        for i in range(Feature.shape[1]):
+            for j in range(Feature.shape[2]):
+                scalers= StandardScaler()
+                tmp=Feature[:, i, j].reshape(-1,1)
+                if tmp.max()==1.0 and tmp.min()==0.0:
+                    Feature_normalized[:,i,j] = tmp.reshape(len(tmp))
+                else:
+                    tmp2=scalers.fit_transform(tmp)
+                    Feature_normalized[:, i, j] = tmp2.reshape(len(tmp2))
     # create ComboToIndex file
     ComboToIndex ={Variants[i]:i for i in range(len(Variants))}
+
+    return Feature,Feature_normalized,ComboToIndex
+def saveEncoding(input_dir,save_dir,dataset,encoding):
+    data=pd.read_excel(os.path.join(input_dir,dataset+'.xlsx'))
+    Variants = data['Variants'].values
+
+    Feature,Feature_normalized,ComboToIndex =  RunEncoding(input_dir, Variants, encoding)
+    np.save(os.path.join(save_dir, dataset+'_'+encoding+ '.npy'), Feature)
+    np.save(os.path.join(save_dir, dataset+'_'+encoding + '_normalized.npy'), Feature_normalized)
     with open(os.path.join(save_dir, 'ComboToIndex' + '_'+dataset +'_'+ encoding+ '.pkl'), 'wb') as f:
         pickle.dump(ComboToIndex, f)
 ##########################################################################################
@@ -111,5 +126,5 @@ if __name__ == "__main__":
         os.mkdir(save_dir)
 
 
-    RunEncoding(input_dir,save_dir, dataset, encoding)
+    saveEncoding(input_dir,save_dir, dataset, encoding)
 

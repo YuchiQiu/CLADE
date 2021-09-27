@@ -8,8 +8,9 @@ def mlde(args,save_dir,trainingdata):
     encoding_lib = os.path.join(input_path, dataset+'_'+encoding+'_normalized.npy')
     combo_to_index =os.path.join(input_path,'ComboToIndex' + '_'+dataset +'_'+ encoding+ '.pkl')
     mldepara=os.path.join(input_path,args.mldepara)
-    os.system('python3 MLDE/ExecuteMlde.py ' +trainingdata +' '+ \
-              encoding_lib +' '+combo_to_index+' --model_params '+mldepara +' --output '+save_dir+' --hyperopt')
+
+    os.system('python3 MLDE/execute_mlde.py ' +trainingdata +' '+ \
+              encoding_lib +' '+combo_to_index+' --model_params '+mldepara +' --output '+save_dir +' --hyperopt')
 if __name__ == "__main__":
 
     import argparse
@@ -31,6 +32,9 @@ if __name__ == "__main__":
     parser.add_argument('--acquisition',help="Acquisition function used for in-cluster sampling; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. ",default='random')
     parser.add_argument('--sampling_para', help="Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3&4. redundant for Thompson and random sampling",type=float, default= 4.0)
 
+    parser.add_argument('--use_zeroshot',help="Whether to employ zeroshot predictor in sampling. Default: FALSE",type=bool, default=False)
+    parser.add_argument('--zeroshot',help="name of zeroshot predictor; Required a CSV file stored in directory $INPUT_PATH with name: $DATA_SET_zeroshot.csv. Default: EvMutation",default='EvMutation')
+    parser.add_argument('--N_zeroshot',help="Number of top ranked variants from zeroshot predictor used for the recombined library. Default: 1600",type=int,default=1600)
 
     ## parameters for MLDE
     parser.add_argument("--mldepara",help="List of MLDE parameters; Default: MldeParameters.csv",default='MldeParameters.csv')
@@ -41,8 +45,8 @@ if __name__ == "__main__":
     # random seed for reproduction
     seed=args.seed
 
-    trainingdata,save_dir=main_sampling(seed,args)
-    mlde(args, save_dir,trainingdata)
+    trainingdata=main_sampling(seed,args,args.save_dir)
+    mlde(args, args.save_dir,trainingdata)
 
 
 

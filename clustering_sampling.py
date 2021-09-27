@@ -8,6 +8,8 @@ import pickle
 import copy
 from sklearn.gaussian_process import GaussianProcessRegressor
 
+
+
 def sampling_subcluster_priority(seed,acquisition,sampling_para,features,Fitness,SEQ_index,Index):
     if acquisition in ['UCB', 'epsilon','Thompson']:
         X_GP=[]
@@ -129,8 +131,23 @@ def length_index(SEQ_index):
     for i in range(len(SEQ_index)):
         k+=len(SEQ_index[i])
     return k
-def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisition,sampling_para,AACombo, Fitness, num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy,K_increments):
-    np.random.seed(seed)
+def cluster_sample(args,save_dir,features,AACombo, Fitness,ComboToIndex):
+    K_increments = args.K_increments
+    for i in range(len(K_increments)):
+        K_increments[i]=int(K_increments[i])
+    N_hierarchy=len(K_increments)
+    encoding = args.encoding
+    dataset=args.dataset
+    num_first_round=int(args.num_first_round)
+    batch_size=int(args.batch_size)
+    hierarchy_batch=int(args.hierarchy_batch)
+    num_batch=int(args.num_batch)
+    num_training_data = batch_size*num_batch
+    input_path=args.input_path
+    seed=args.seed
+
+    acquisition=args.acquisition
+    sampling_para=args.sampling_para
 
     # new hierarchy needs to be generated when number of samples is included in the array
     new_hierarchy = np.arange(1,N_hierarchy)*hierarchy_batch+num_first_round
@@ -155,7 +172,11 @@ def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisi
 
     Prob = np.ones([n_clusters]) / n_clusters
     while num < num_first_round:
-        cluster_id = np.random.choice(np.arange(0, n_clusters), p=Prob)
+        cluster_id = np.random.choice(np.arange(0, total_clusters), p=Prob)
+        while len(Index[cluster_id]) == 0:
+            Prob[cluster_id] = 0
+            Prob = Prob / np.sum(Prob)
+            cluster_id = np.random.choice(np.arange(0, total_clusters), p=Prob)
         Fit[cluster_id].append(Fitness[Index[cluster_id][0]])
         SEQ[cluster_id].append(AACombo[Index[cluster_id][0]])
         Fit_list.append(Fitness[Index[cluster_id][0]])
@@ -272,13 +293,14 @@ def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisi
     Fit_list = np.asarray(Fit_list)
     SEQ_list = np.asarray(SEQ_list)
 
-    dict_1=pickle.load(open(os.path.join(input_path, 'ComboToIndex'+ '_'+dataset +'_'+ encoding+'.pkl'),'rb'))
     for seq in SEQ_list:
         for cluster_id in range(len(SEQ_index)):
-            if dict_1.get(seq) in SEQ_index[cluster_id]:
+            if ComboToIndex.get(seq) in SEQ_index[cluster_id]:
                 Cluster_list.append(cluster_id)
 
+
     Cluster_list=np.asarray(Cluster_list)
+
     sub_data = pd.DataFrame({'AACombo': SEQ_list, 'Fitness': Fit_list,'Cluster': Cluster_list})
     trainingdata=os.path.join(save_dir , 'InputValidationData.csv')
     sub_data.to_csv(trainingdata, index=False)
@@ -286,55 +308,55 @@ def cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisi
 
     np.savez(os.path.join(save_dir, 'clustering.npz'), tree=tree)
     return trainingdata
-def main_sampling(seed,args):
-
-    K_increments = args.K_increments
-    for i in range(len(K_increments)):
-        K_increments[i]=int(K_increments[i])
-    N_hierarchy=len(K_increments)
-    encoding = args.encoding
-    dataset=args.dataset
-    num_first_round=int(args.num_first_round)
-    batch_size=int(args.batch_size)
-    hierarchy_batch=int(args.hierarchy_batch)
-    num_batch=int(args.num_batch)
-    num_training_data = batch_size*num_batch
-    input_path=args.input_path
-    save_dir=args.save_dir
-
-    acquisition=args.acquisition
-    sampling_para=args.sampling_para
-
-    groundtruth_file=os.path.join(input_path, dataset+  '.xlsx')
-    groundtruth = pd.read_excel(groundtruth_file)
-    Fitness = groundtruth['Fitness'].values
-    Fitness = Fitness / Fitness.max()
-    AACombo = groundtruth['Variants'].values
-
+def main_sampling(seed,args,save_dir):
+    np.random.seed(seed)
 
     if not os.path.exists(save_dir):
-        # os.mkdir(save_dir)
         os.system('mkdir -p '+save_dir)
+    groundtruth_file=os.path.join(args.input_path, args.dataset+  '.xlsx')
+    groundtruth = pd.read_excel(groundtruth_file)
+    Fitness = groundtruth['Fitness'].values
+    fit_max=Fitness.max()
+    # Fitness = Fitness / Fitness.max()
+    if args.use_zeroshot:
+        AACombo,FIT_zeroshot = library_zeroshot(args.input_path, save_dir, args.dataset, args.zeroshot, args.N_zeroshot)
+        from Encoding import RunEncoding
 
-    # para=['# training data','# first round','batch size','hierarchy batch','max hierarchy']
-    # value=[num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy]
-    # for i in range(len(K_increments)):
-    #     para.append('K'+str(i+1))
-    #     value.append(K_increments[i])
-    # para_csv = pd.DataFrame({'Parameters': para, 'Value':value })
-    #
-    # para_csv.to_csv(save_dir + 'parameters.csv', index=False)
+        tmp, features, ComboToIndex = RunEncoding(args.input_path,AACombo,args.encoding)
+        print(features.shape)
+        Fitness=FIT_zeroshot/fit_max
 
-    # get feature matrix
-    encoding_lib = os.path.join(input_path, dataset+'_'+encoding + '_normalized.npy')
-    features = np.load(encoding_lib)
+    else:
+        # get feature matrix
+        encoding_lib = os.path.join(args.input_path, args.dataset+'_'+args.encoding + '_normalized.npy')
+        features = np.load(encoding_lib)
+        ComboToIndex=pickle.load(open(os.path.join(args.input_path, 'ComboToIndex'+ '_'+args.dataset +'_'+ args.encoding+'.pkl'),'rb'))
+        Fitness = Fitness / Fitness.max()
+        AACombo = groundtruth['Variants'].values
+
     if len(features.shape) == 3:
         features = np.reshape(features, [features.shape[0], features.shape[1] * features.shape[2]])
     features = features[0:len(Fitness)]
 
+    trainingdata=cluster_sample(args,save_dir,features,AACombo, Fitness,ComboToIndex)
+    return trainingdata
 
-    trainingdata=cluster_sample(seed, input_path,save_dir, dataset,encoding,features, acquisition,sampling_para,AACombo, Fitness, num_training_data,num_first_round,batch_size,hierarchy_batch,N_hierarchy,K_increments)
-    return trainingdata,save_dir
+
+
+def library_zeroshot(input_path,save_dir,dataset,zeroshot,N_zeroshot):
+    data_landscape = pd.read_excel(os.path.join(input_path,dataset+'.xlsx'))
+    SEQ = data_landscape['Variants'].values
+    Fitness=data_landscape['Fitness'].values
+    # Fitness=Fitness/max(Fitness)
+
+    data_zeroshot = pd.read_csv(os.path.join(input_path,dataset+'_zeroshot.csv'))
+    data_zeroshot = data_zeroshot.sort_values(by=zeroshot, ascending=False)
+
+    top_Combo = data_zeroshot['Combo'].values[0:N_zeroshot]
+
+    SEQ_zeroshot = [SEQ[i] for i in range(len(SEQ)) if SEQ[i] in top_Combo]
+    FIT_zeroshot = [Fitness[i] for i in range(len(SEQ)) if SEQ[i] in top_Combo]
+    return SEQ_zeroshot,FIT_zeroshot
 if __name__ == "__main__":
 
     import argparse
@@ -357,11 +379,14 @@ if __name__ == "__main__":
     parser.add_argument('--acquisition',help="Acquisition function used for in-cluster sampling; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. Default: random",default='random')
     parser.add_argument('--sampling_para', help="Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3&4. redundant for Thompson and random sampling. Default: 4.0",type=float, default= 4.0)
 
+    parser.add_argument('--use_zeroshot',help="Whether to employ zeroshot predictor in sampling. Default: FALSE",type=bool, default=False)
+    parser.add_argument('--zeroshot',help="name of zeroshot predictor; Required a CSV file stored in directory $INPUT_PATH with name: $DATA_SET_zeroshot.csv. Default: EvMutation",default='EvMutation')
+    parser.add_argument('--N_zeroshot',help="Number of top ranked variants from zeroshot predictor used for the recombined library. Default: 1600",type=int,default=1600)
 
     args = parser.parse_args()
 
 
     # random seed for reproduction
     seed=args.seed
-    main_sampling(seed,args)
+    main_sampling(seed,args,args.save_dir)
 
