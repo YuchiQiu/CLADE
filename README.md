@@ -35,7 +35,7 @@ Put `GB1.xlsx` in the directory `Input/`.
 
 # Input Files:
 `$COMB_LIB.xlsx`: Variants and their fitness in the combinatory library. Only variants with available experimentally determined fitness are listed. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
-`$DATASET_zeroshot.csv`: optional if zero-shot predictions are used. It can be calculated followed by instructions in [ftMLDE] (https://github.com/fhalab/MLDE#building-an-alignment-for-msa-transformer). One column of this file name 'Combo" provides the list of all variants. Other columns named by the zero-shot methods give the preditions for each variant. Two zero-shot predictions files used for CLADE calculations are provided in folder `Input/`. 
+`$DATASET_zeroshot.csv`: optional if zero-shot predictions are used. It can be calculated followed by instructions in [ftMLDE](https://github.com/fhalab/MLDE#building-an-alignment-for-msa-transformer). One column of this file name 'Combo" provides the list of all variants. Other columns named by the zero-shot methods give the preditions for each variant. Two zero-shot predictions files used for CLADE calculations are provided in folder `Input/`. 
 
 # Usage
 ## Encoding
