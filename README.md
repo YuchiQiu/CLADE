@@ -17,7 +17,7 @@ Many MLDE methods can integrate with CLADE. Various sampling strategies can be u
 # Installment
 `git clone --recurse-submodules https://github.com/YuchiQiu/CLADE.git`
 
-Then install [MLDE](https://github.com/fhalab/MLDE) for supervised learning model:
+Then install [MLDE](https://github.com/fhalab/MLDE#building-an-alignment-for-msa-transformer) for supervised learning model:
 ```
 cd CLADE/ 
 git clone --recurse-submodules https://github.com/fhalab/MLDE.git`
@@ -109,6 +109,6 @@ GB1 dataset (`GB1.xlsx`) can be obtained from: [Wu, Nicholas C., et al. "Adaptat
 ## PhoQ dataset
 PhoQ dataset (`PhoQ.xlsx`) is owned by Michael T. Laub's lab. Please cite: [Podgornaia, Anna I., and Michael T. Laub. "Pervasive degeneracy and epistasis in a protein-protein interface." Science 347.6222 (2015): 673-677.](https://science.sciencemag.org/content/347/6222/673.abstract)
 ## MLDE 
-The supervised learning package MLDE can be obtained from: [Wittmann, Bruce J., Yisong Yue, and Frances H. Arnold. "Machine Learning-Assisted Directed Evolution Navigates a Combinatorial Epistatic Fitness Landscape with Minimal Screening Burden." (2020).](https://www.biorxiv.org/content/10.1101/2020.12.04.408955v1)
+The supervised learning package MLDE can be obtained from: [Wittmann, Bruce J., Yisong Yue, and Frances H. Arnold. "Informed training set design enables efficient machine learning-assisted directed protein evolution." Cell Systems (2021).](https://www.cell.com/cell-systems/fulltext/S2405-4712(21)00286-6?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2405471221002866%3Fshowall%3Dtrue)
 # Reference
 This work is under peer review.
