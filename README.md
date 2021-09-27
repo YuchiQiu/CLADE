@@ -1,6 +1,8 @@
 # CLADE: Cluster learning-assisted directed evolution. 
 CLADE guides experiments in directed evolution to optimize fitness of variants in a combinatorial library from multi-site mutagenesis. It first utilizes unsupervised clustering to select potential informative variants for experimental screen to obtain their fitness. Then it takes these labeled variants as training data to train a supervised learning model. The supervised learning model predicts fitness of the rest of variants in the combinatorial library. Top-predicted variants potentially have high priority to be screened.
 
+Many MLDE methods can integrate with CLADE. Various sampling strategies can be used for the sampling in selected clusters, including random sampling and Gaussian process. The zero-shot predictions can be used to restrict training data sampling within the top-ranked variants. 
+
 # Table of Contents  
 
 - [Installment](#installment)
@@ -33,6 +35,7 @@ Put `GB1.xlsx` in the directory `Input/`.
 
 # Input Files:
 `$COMB_LIB.xlsx`: Variants and their fitness in the combinatory library. Only variants with available experimentally determined fitness are listed. First Column (Variants): sequences for variants at mutation sites. Second Column (Fitness): Fitness values.\
+`$DATASET_zeroshot.csv`: optional if zero-shot predictions are used. It can be calculated followed by instructions in [ftMLDE] (https://github.com/fhalab/MLDE#building-an-alignment-for-msa-transformer). One column of this file name 'Combo" provides the list of all variants. Other columns named by the zero-shot methods give the preditions for each variant. Two zero-shot predictions files used for CLADE calculations are provided in folder `Input/`. 
 
 # Usage
 ## Encoding
@@ -54,7 +57,7 @@ $ python3 Encoding.py --help
 ## Clustering Sampling
 `clustering_sampling.py` Use hierarchical clustering to generate training data. 
 ```python
-$ python3 cluster_sampling.py --help
+$ python3 clustering_sampling.py --help
 ```
 ### Inputs
 #### positional arguments:  
@@ -69,7 +72,11 @@ $ python3 cluster_sampling.py --help
 `--input_path INPUT_PATH`  Input Files Directory. Default 'Input/'  \
 `--save_dir SAVE_DIR`   Output Files Directory; Default: current time  \
 `--acquisition ACQUISITION` Acquisition function used for in-cluster sampling; default UCB. Options: 1. UCB; 2. epsilon; 3. Thompson; 4. random. Default: random \
-`--sampling_para SAMPLING_PARA` Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3&4. redundant for Thompson and random sampling. Default: 4.0.\
+`--sampling_para SAMPLING_PARA` Float parameter for the acquisition function. 1. beta for GP-UCB; 2. epsilon for epsilon greedy; 3&4. redundant for Thompson and random sampling. Default: 4.0\
+`--use_zeroshot USE_ZEROSHOT` Whether to employ zeroshot predictor in sampling. Default: FALSE \
+`--zeroshot ZEROSHOT` Name of zeroshot predictor; Required a CSV file stored in directory $INPUT_PATH with name: $DATA_SET_zeroshot.csv. Default: EvMutation \
+`--N_zeroshot N_ZEROSHOT` Number of top ranked variants from zeroshot predictor used for the recombined library. Default: 1600
+
 ### Outputs:
 `parameters.csv`: Hyperparameters used in the clustering sampling.
 `InputValidationData.csv`: Selected labeled variants. Training data for downstream supervised learning. Default will generate 384 labeled variants with batch size 96.
