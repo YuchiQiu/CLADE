@@ -1,5 +1,5 @@
 # Cluster learning-assisted directed evolution (CLADE). 
-*This is the source code of paper: "Cluster learning-assisted directed evolution" by Yuchi Qiu, Jian Hu, Guo-Wei Wei. Nature Computational Science 2021. 
+**This is the source code of paper: _"Cluster learning-assisted directed evolution" by Yuchi Qiu, Jian Hu, Guo-Wei Wei. Nature Computational Science 2021."_**
 
 CLADE guides experiments in directed evolution to optimize fitness of variants in a combinatorial library from multi-site mutagenesis. It first utilizes unsupervised clustering to select potential informative variants for experimental screen to obtain their fitness. Then it takes these labeled variants as training data to train a supervised learning model. The supervised learning model predicts fitness of the rest of variants in the combinatorial library. Top-predicted variants potentially have high priority to be screened.
 
@@ -113,4 +113,4 @@ PhoQ dataset (`PhoQ.xlsx`) is owned by Michael T. Laub's lab. Please cite: [Podg
 ## MLDE packages and zero-shot predictions
 The supervised learning package MLDE and zero-shot predictions can be found in: [Wittmann, Bruce J., Yisong Yue, and Frances H. Arnold. "Informed training set design enables efficient machine learning-assisted directed protein evolution." Cell Systems (2021).](https://www.cell.com/cell-systems/fulltext/S2405-4712(21)00286-6?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2405471221002866%3Fshowall%3Dtrue)
 # Reference
-This work is under peer review.
+Cluster learning-assisted directed evolution. Yuchi Qiu, Jian Hu, and Guo-Wei Wei. Nature Computational Science 2021.
