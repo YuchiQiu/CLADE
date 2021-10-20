@@ -1,4 +1,6 @@
-# CLADE: Cluster learning-assisted directed evolution. 
+# Cluster learning-assisted directed evolution (CLADE). 
+This is the source code of paper: "Cluster learning-assisted directed evolution" by Yuchi Qiu, Jian Hu, Guo-Wei Wei. Nature Computational Science 2021. 
+
 CLADE guides experiments in directed evolution to optimize fitness of variants in a combinatorial library from multi-site mutagenesis. It first utilizes unsupervised clustering to select potential informative variants for experimental screen to obtain their fitness. Then it takes these labeled variants as training data to train a supervised learning model. The supervised learning model predicts fitness of the rest of variants in the combinatorial library. Top-predicted variants potentially have high priority to be screened.
 
 Many MLDE methods can integrate with CLADE. Various sampling strategies can be used for the sampling in selected clusters, including random sampling and Gaussian process. The zero-shot predictions can be used to restrict training data sampling within the top-ranked variants. 
