@@ -84,22 +84,22 @@ $ python3 clustering_sampling.py --help
 `InputValidationData.csv`: Selected labeled variants. Training data for downstream supervised learning. Default will generate 384 labeled variants with batch size 96.
 `clustering.npz`: Indecis of variants in each cluster.
 ### Examples:
-`python3 cluster_sampling.py 30 40 40`
+`python3 clustering_sampling.py 30 40 40`
 ## CLADE
-`CLADE.py` Run full process of CLADE. Run `cluster_sampling.py` and downstream supervised learning (MLDE).
+`CLADE.py` Run full process of CLADE. Run `clustering_sampling.py` and downstream supervised learning (MLDE).
 
 ### Inputs
-It requires the same positional and optional arguments with `cluster_sampling.py`. 
+It requires the same positional and optional arguments with `clustering_sampling.py`. 
 
 It has an additional optional argument:
 
 `--mldepara MLDEPARA`   List of MLDE parameters. Default: MldeParameters.csv 
 ### Outputs:
-In additional to three output files from `cluster_sampling.py`, there are 6 files output from MLDE package. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
+In additional to three output files from `clustering_sampling.py`, there are 6 files output from MLDE package. The most important one is: `PredictedFitness.csv` showing predicted fitness of all variants in the combinatorial library. The variants with higher predicted fitness have higher priority to be screened.
 ### Examples:
 `python3 CLADE.py 30 40 40 --batch_size 96 --num_first_round 96 --hierarchy_batch 96 --num_batch 4`
 ## DEMO:
-Functions `Encoding.py` and `cluster_sampling.py` can be run within a few minutes on a desktop. Demo can be run via the examples given above. 
+Functions `Encoding.py` and `clustering_sampling.py` can be run within a few minutes on a desktop. Demo can be run via the examples given above. 
 
 `CLADE.py` includes the ensembled supervised learning models with hyperparameter optimization, which takes a few hours to run on a desktop. A simple demo can be run with a minimized supervised model with only one model without any hyperparameter optimization by using `Demo_MldeParameters.csv`:
 
