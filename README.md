@@ -1,4 +1,5 @@
 # Cluster learning-assisted directed evolution (CLADE). 
+[![DOI](https://zenodo.org/badge/368001786.svg)](https://zenodo.org/badge/latestdoi/368001786)
 **This is the source code of paper: _"Cluster learning-assisted directed evolution" by Yuchi Qiu, Jian Hu, and Guo-Wei Wei. Nature Computational Science 2021."_**
 
 CLADE guides experiments in directed evolution to optimize fitness of variants in a combinatorial library from multi-site mutagenesis. It first utilizes unsupervised clustering to select potential informative variants for experimental screen to obtain their fitness. Then it takes these labeled variants as training data to train a supervised learning model. The supervised learning model predicts fitness of the rest of variants in the combinatorial library. Top-predicted variants potentially have high priority to be screened.
